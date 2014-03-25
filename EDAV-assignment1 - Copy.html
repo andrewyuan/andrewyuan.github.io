@@ -1,34 +1,32 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
+<meta charset="utf-8">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title></title>
-<meta name="keywords" content="" />
-<meta name="description" content="" />
-<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900" rel="stylesheet" />
-<link href="style/default.css" rel="stylesheet" type="text/css" media="all" />
-<link href="style/fonts.css" rel="stylesheet" type="text/css" media="all" />
-<link href="style/magnific-popup.css" rel="stylesheet"> 
-<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
-<script src="lib/jquery.magnific-popup.min.js?v=0.9.9"></script>
-<!--[if IE 6]><link href="default_ie6.css" rel="stylesheet" type="text/css" /><![endif]-->
+<style>
 
-<style type="text/css">
-	    /* padding-bottom and top for image */
-	    .mfp-no-margins img.mfp-img {
-	      padding: 0;
-	    }
-	    /* position of shadow behind the image */
-	    .mfp-no-margins .mfp-figure:after {
-	      top: 0;
-	      bottom: 0;
-	    }
-	    /* padding for main container */
-	    .mfp-no-margins .mfp-container {
-	      padding: 0;
-	    }
-	    
+	body {
+	  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	  margin: auto;
+	  position: relative;
+	  width: 1200px;
+	}
+	
+	text {
+	  font: 10px sans-serif;
+	}
+	
+	.axis path,
+	.axis line {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+	}
+	
+	form {
+	  position: absolute;
+	  right: 10px;
+	  top: 10px;
+	}
+
       #tooltip {
         position: absolute;
         width: 200px;
@@ -57,24 +55,6 @@
 
 </style>
 
-</head>
-<body>
-<div id="header-wrapper">
-	<div id="header" class="container">
-		<div id="menu">
-			<ul>
-				<li><a href="index.html" accesskey="1" id="homepage">Homepage</a></li>
-				<li><a href="index.html#aboutme" accesskey="2" id="aboutmeBtn">About Me</a></li>
-				<li class="current_page_item"><a href="index.html#samplework" accesskey="3" id="sampleworkBtn">Sample Work</a></li>
-				<li><a href="index.html#getintouch" accesskey="4" title="getintouchBtn">Get in Touch</a></li>
-			</ul>
-		</div>
-</div>
-
-<div id="wrapper3">
-	<div id="portfolio" class="container">
-			
-			
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
 <H3>Fifa World Cup teams goal scoring performance</H3>
@@ -578,7 +558,7 @@ var margin = {top: 15, right: 10, bottom: 5, left: 100},
 
 var color = ["#ddd", "#4C374C", "#967AA4", "#CCAFE8"];
 var lineColor = "#59DDAF";
-var posAdjust = 20;
+var posAdjust = -400;
 
 var n = 4, // number of layers
     m = data.length, // number of samples per layer
@@ -959,86 +939,3 @@ legend.selectAll("text")
 
 
 </script>
-			
-		</div>
-	</div>
-</div>
-
-<div id="contact">
-	<div class="title">
-		<h2><A NAME="getintouch">Get in touch</A></h2>
-		<span class="byline">I will be glad to hear from you!</span> </div>
-	<ul class="contact">
-		<li><a href="https://www.facebook.com/andrew.yuan.9" class="icon icon-facebook"><span></span></a></li>
-		<li><a href="https://www.linkedin.com/in/andrewgky" class="icon icon-linkedin"><span>LinkedIn</span></a></li>
-		<li><a href="https://plus.google.com/u/0/+AndrewYuanGK" class="icon icon-google-plus"><span>Google+</span></a></li>
-		<li><a href="https://twitter.com/AndrewGKYuan" class="icon icon-twitter"><span>Twitter</span></a></li>
-		<li><a href="https://github.com/andrewyuan" class="icon icon-github"><span>Github</span></a></li>
-		<li><a href="mailto:andrew.gk.yuan@gmail.com" class="icon icon-envelope"><span>Gmail</span></a></li>
-	</ul>
-	<p>Copyright (c) 2014 Andrew Yuan. No rights reserved. | Photos by <a href="#">Me</a> | Design by <a href="http://www.freecsstemplates.org/" rel="nofollow">CSS Templates</a>.</p>
-</div>
-</body>
-<script>
-/*
-	var main = {
- 
-    onReady: function() {
-		$(window).on('scroll', main.toggleOpacity);
-		$('.image-popup-no-margins').magnificPopup({
-	          type: 'image',
-	          closeOnContentClick: true,
-	          closeBtnInside: false,
-	          fixedContentPos: true,
-	          mainClass: 'mfp-no-margins mfp-with-zoom', // class to remove default margin from left and right side
-	          image: {
-	            verticalFit: true
-	          },
-	          zoom: {
-	            enabled: true,
-	            duration: 500 // don't foget to change the duration also in CSS
-	          }
-	        });
-		$('.simple-ajax-popup-align-top').magnificPopup({
-          type: 'ajax',
-          alignTop: true,
-          overflowY: 'scroll' // as we know that popup content is tall we set scroll overflow by default to avoid jump
-        });
-     },
- 
-    toggleOpacity: function(){
-	    var fadeBegin = 1, fadeFinish = 700, fadingElement = $('#aboutme');
-		var divPosition = { "elem1":{"name":"#aboutme", "fadeBegin":0, "fadeFinish":800},
-							"elem2":{"name":"#portfolio", "fadeBegin":500, "fadeFinish":1400},
-							"elem3":{"name":"#contact", "fadeBegin":1000, "fadeFinish":2000}
-							};
-
-    	var offset = $(document).scrollTop(); 
-		//console.log("offset=" + offset);
-
-		$.each(divPosition, function( i, elem ) {
-			var opacity = 1;
-		    fadingElement = $(elem["name"]);
-		    fadeBegin = elem["fadeBegin"];
-		    fadeFinish = elem["fadeFinish"];
-
-		    //console.log(fadingElement);
-		    
-		    if( offset < fadeBegin ){
-				//opacity = fadeBegin/(4*offset);
-				opacity = 0; 
-			} else if( offset >= fadeFinish ){
-				//opacity = fadeFinish/(4*offset);
-				opacity = 0;
-			}
-			//console.log(opacity)
-			fadingElement.stop().animate({opacity: opacity}, 300);
-		});
-	}
-};
- 
-$( document ).ready( main.onReady );
-	
-	
-</script>
-</html>
