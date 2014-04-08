@@ -158,19 +158,19 @@
 <H3>Modeling the Probability of a Soccer Match Outcome</H3>
 
 <p>Analyzing the outcomes of 13.337 Fifa official matches since 1994 involving the 2014 Fifa World Cup contenders, a very clear trend can be observed from the matches data.
-<p>Based on scraped data from Fifa.com, a strong correlation could be observed between the games locations (home or away), the Ts positions in the Fifa Ranking (more precisely, the distance between their positions) and the proportion of matches won or lost.
-<p>For instance, of the 48 matches played at home where a T challenged an opponent 10 positions below in the ranking table:
+<p>Based on scraped data from Fifa.com, a strong correlation could be observed between the games locations (home or away), the teams positions in the Fifa Ranking (more precisely, the distance between their positions) and the proportion of matches won or lost.
+<p>For instance, of the 48 matches played at home where a team challenged an opponent 10 positions below in the ranking table:
 
-<li> 27 (56.25%) were won by the home T
+<li> 27 (56.25%) were won by the home team
 <li> 12 (25%) ended up with a draw
 <li> 9 (18.75%) were lost.
 <li> Considering half of the draws as positive results and half as negative, it sums up to <b>68.75% of positive results</b>.
 <p>Now, for the exact same ranking distance, of the 44 matches played at the opponents home where the opponent was 10 positions below in the ranking table: 
-<li> 9 (20.45%) were won by the home T
+<li> 9 (20.45%) were won by the home team
 <li> 22 (50%) ended up with a draw
 <li> 13 (29.55%) were lost.
 <li> Considering half of the draws as positive results and half as negative, it sums up to <b>45.45% of positive results</b>.
-<p> Just to show a final example, of the 5 matches played at the opponents home where the opponent was 100 positions below in the ranking table, 100% of them were won by the away T. The matches for this case were:
+<p> Just to show a final example, of the 5 matches played at the opponents home where the opponent was 100 positions below in the ranking table, 100% of them were won by the away team. The matches for this case were:
 <li> (1)Brazil 3 x 0 Wales(101) - 05/23/2000 – Cardiff
 <li> (7)Spain 2 x 0 Latvia(107) - 06/02/2007 - Riga
 <li> (21)USA 1 x 0 Barbados(121) - 06/22/2008 - Bridgetown
@@ -179,7 +179,7 @@
 
 
     <div class="buttonContainer" align="center">
-      <a class="button" target="_blank" rel="nofollow" id="aggregated" style="opacity:1"><span class="a-btn-text">Aggregated</span></a>   
+      <a class="button" target="_blank" rel="nofollow" id="aggregated" style="opacity:1"><span class="a-btn-text">Averaged</span></a>   
       <a class="button" target="_blank" rel="nofollow" id="perLocation" style="opacity:0.4"><span class="a-btn-text">Detail Home/Away</span></a>    
       <a class="button" target="_blank" rel="nofollow" id="perGame" style="opacity:0.4"><span class="a-btn-text">Detail Matches</span></a>
     </div>
@@ -209,7 +209,7 @@
 <br>
 <h3>The Fifa Ranking</h3>
 
-<P>The ranking table is updated on a monthly basis, based on points earned from official matches results. The points earned depend on the opposing T ranking position, the importance of the match (whether it is a friendly match, a qualifying, confederations cup or world cup match) and the confederation of the opposing T. More information can be found <a href="http://www.fifa.com/worldranking/procedureandschedule/menprocedure/index.html">here</a>.
+<P>The ranking table is updated on a monthly basis, based on points earned from official matches results. The points earned depend on the opposing team ranking position, the importance of the match (whether it is a friendly match, a qualifying, confederations cup or world cup match) and the confederation of the opposing team. More information can be found <a href="http://www.fifa.com/worldranking/procedureandschedule/menprocedure/index.html">here</a>.
 
 
 <script>
@@ -3450,10 +3450,10 @@ var gamesData = [
 
   legend.append("rect")
       .attr({
-        "x": xScale(120),
+        "x": xScale(100),
         "y": height-padding/2,
         "height": 30,
-        "width": 200,
+        "width": 250,
         "rx": 6,
         "ry": 6,
         "fill": "none",
@@ -3462,21 +3462,21 @@ var gamesData = [
       });
         
   legend.selectAll("text")
-      .data(["Home", "Away"])
+      .data(["Averaged", "Home", "Away"])
       .enter().append("text")
       .text(function(d) { return d; })
       .attr({
-        "x": function(d, i) {return xScale(100+(i+1)*40);},
+        "x": function(d, i) {return xScale(80+(i+1)*34);},
         "y": height-padding/4,
         "font-size": "11px",
         "fill": color.axis
       });
 
   legend.selectAll(".circle")
-      .data(["Home", "Away"])
+      .data(["Averaged", "Home", "Away"])
       .enter().append("circle")
       .attr({
-        "cx": function(d, i) {return xScale(100+(i+1)*40)-20;},
+        "cx": function(d, i) {return xScale(80+(i+1)*34)-15;},
         "cy": height-padding/4 - 4,
         "r": 3,
         "stroke": function(d, i) {
