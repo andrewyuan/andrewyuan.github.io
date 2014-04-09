@@ -56,6 +56,8 @@
 	{
 		margin: 0px auto;
 		width: 1200px;
+		position: relative;
+
 	}
 	
 
@@ -327,6 +329,8 @@
 		padding: 5em 0em;
 		background: #8DCB89 url(images/header.jpg) no-repeat center;
 		background-size: cover;
+		min-width: 1200px;
+
 	}
 
 	#header
@@ -432,11 +436,13 @@
 	#wrapper1
 	{
 		background: #EDEDED;
+		min-width: 1200px;
 	}
 
 	#wrapper2
 	{
 		background: #EDEDED;
+		min-width: 1200px;
 	}
 
 	#wrapper3
@@ -444,6 +450,7 @@
 		overflow: hidden;
 		padding: 8em 0em;
 		background: #FFF;
+		min-width: 1200px;
 	}
 	
 	#wrapper4
@@ -451,6 +458,7 @@
 		overflow: hidden;
 		padding: 8em 0em;
 		background: #E74E59;
+		min-width: 1200px;
 	}
 
 /*********************************************************************************/
