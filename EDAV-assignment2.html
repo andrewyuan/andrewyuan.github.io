@@ -3151,7 +3151,7 @@ var gamesData = [
           width = 1200 - margin.left,
           height = 800 - margin.top,
           padding = 80;
-      var posAdjust = 10;
+      var posAdjust = -300;
       var minRankDiff = 0, maxRankDiff = 0;
       var n = gamesData.length;
 
@@ -3412,7 +3412,7 @@ var gamesData = [
               tooltip = d3.select("#tooltip")
 //                 .style("left", (d3.event.pageX+10) + "px")
                  .style("left", (d3.event.pageX+posAdjust) + "px")
-                 .style("top", (d3.event.pageY-10) + "px")
+                 .style("top", (d3.event.pageY+posAdjust) + "px")
               tooltip.select("#matchScore").text(matchScore);  
               tooltip.select("#matchDate").text(d.date);  
               tooltip.select("#matchLocation").text(d.loc);

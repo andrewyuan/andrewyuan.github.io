@@ -581,7 +581,7 @@ var margin = {top: 15, right: 10, bottom: 5, left: 100},
 
 var color = ["#ddd", "#4C374C", "#967AA4", "#CCAFE8"];
 var lineColor = "#59DDAF";
-var posAdjust = 20;
+var posAdjust = -300;
 
 var n = 4, // number of layers
     m = data.length, // number of samples per layer
@@ -676,7 +676,7 @@ layer.selectAll("rect")
                d3.select("#tooltip")
 //                 .style("left", (d3.event.pageX+10) + "px")
                  .style("left", (d3.event.pageX+posAdjust) + "px")
-                 .style("top", (d3.event.pageY-10) + "px")
+                 .style("top", (d3.event.pageY+posAdjust) + "px")
                  .select("#value")
                  .text(tooltip);  
   //                 .text(d.team + " - " + d.goals + " goals (" + d.y + " in round)");  
@@ -846,7 +846,7 @@ champions.selectAll("circle")
             tooltip = d.year + " - " + d.champion + " - " + d.champGoals + " goals";
             d3.select("#tooltip")
                  .style("left", (d3.event.pageX+posAdjust) + "px")
-                 .style("top", (d3.event.pageY-10) + "px")
+                 .style("top", (d3.event.pageY+posAdjust) + "px")
                  .select("#value")
                  .text(tooltip);  
   //                 .text(d.team + " - " + d.goals + " goals (" + d.y + " in round)");  
