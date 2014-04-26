@@ -995,9 +995,7 @@
                                 edge.attr(linkHighlight)
                             })
               d3.selectAll("." + d.group).attr("fill", color.group[d.group])
-              d3.selectAll("text." + d.abrev) .attr({"fill": "blue",
-                                  "font-weight": "bold",
-                                  "font-size": "18px"});
+              d3.selectAll("text." + d.abrev) .attr({"fill": "blue"});
               gRankTeams.selectAll("#" + d.abrev).attr('stroke', 'blue')
               gMapBubble.selectAll("#" + d.abrev).attr('fill', 'blue')
         })
