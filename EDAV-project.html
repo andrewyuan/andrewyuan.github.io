@@ -271,7 +271,7 @@
                   "stroke-width": "2px",
                   "fill": "none"}
 
-  var linkHighlight = {"stroke": "blue",
+  var linkHighlight = {"stroke": "#1659F5",
                   "stroke-width": "4px",
                   "fill": "none"}
 
@@ -544,9 +544,9 @@
                                       
                     })
                     d3.selectAll("." + d.group).attr("fill", color.group[d.group])
-                    d3.selectAll("text." + d.abrev) .attr({"fill": "blue"});
-                    gRankTeams.selectAll("#" + d.abrev).attr('stroke', 'blue')
-                    gMapBubble.selectAll("#" + d.abrev).attr('fill', 'blue')
+                    d3.selectAll("text." + d.abrev) .attr({"fill": "#1659F5"});
+                    gRankTeams.selectAll("#" + d.abrev).attr('stroke', '#1659F5')
+                    gMapBubble.selectAll("#" + d.abrev).attr('fill', '#1659F5')
               })
               .on("mouseout", function(d){
                     d.nodes.forEach(function (d, i) {
@@ -667,10 +667,10 @@
                                     d.probability = d.nodes[i].probability
                                     d3.selectAll("." + d.group + "#" + d.node).attr("fill", color.group[d.group])
                                     gBarTeams.selectAll("." + d.group).attr("fill", color.group[d.group])
-                                    d3.selectAll("text#" + d.abrev + d.node) .attr("fill", "blue");
-                                    d3.selectAll("text#" + d.abrev) .attr("fill", "blue");
-                                    gRankTeams.selectAll("#" + d.abrev).attr('stroke', 'blue')
-                                    gMapBubble.selectAll("#" + d.abrev).attr('fill', 'blue')
+                                    d3.selectAll("text#" + d.abrev + d.node) .attr("fill", "#1659F5");
+                                    d3.selectAll("text#" + d.abrev) .attr("fill", "#1659F5");
+                                    gRankTeams.selectAll("#" + d.abrev).attr('stroke', '#1659F5')
+                                    gMapBubble.selectAll("#" + d.abrev).attr('fill', '#1659F5')
                                     return parseFloat(d.probability*100).toFixed(1) + '%';
                                   }
                               }
@@ -753,9 +753,9 @@
                                       edge.attr(linkHighlight)
                                   })
                     d3.selectAll("." + d.group).attr("fill", color.group[d.group])
-                    d3.selectAll("text." + d.abrev) .attr({"fill": "blue"});
-                    gRankTeams.selectAll("#" + d.abrev).attr('stroke', 'blue')
-                    gMapBubble.selectAll("#" + d.abrev).attr('fill', 'blue')
+                    d3.selectAll("text." + d.abrev) .attr({"fill": "#1659F5"});
+                    gRankTeams.selectAll("#" + d.abrev).attr('stroke', '#1659F5')
+                    gMapBubble.selectAll("#" + d.abrev).attr('fill', '#1659F5')
               })
               .on("mouseout", function(d){
                     d.nodes.forEach(function (d, i) {
@@ -995,9 +995,9 @@
                                 edge.attr(linkHighlight)
                             })
               d3.selectAll("." + d.group).attr("fill", color.group[d.group])
-              d3.selectAll("text." + d.abrev) .attr({"fill": "blue"});
-              gRankTeams.selectAll("#" + d.abrev).attr('stroke', 'blue')
-              gMapBubble.selectAll("#" + d.abrev).attr('fill', 'blue')
+              d3.selectAll("text." + d.abrev) .attr({"fill": "#1659F5"});
+              gRankTeams.selectAll("#" + d.abrev).attr('stroke', '#1659F5')
+              gMapBubble.selectAll("#" + d.abrev).attr('fill', '#1659F5')
         })
         .on("mouseout", function(d){
               d.nodes.forEach(function (d, i) {
