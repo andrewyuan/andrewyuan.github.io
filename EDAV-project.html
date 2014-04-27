@@ -71,11 +71,16 @@
     </div>
 </div>
 <br>
-<center><H3><font color="white" size="6px">2014 Fifa World Cup Brazil outcome probability</font></H3></center>
+<div id="contact">
+  <div class="title">
+
+  <center><H3><font color="white" size="6px">2014 Fifa World Cup Brazil outcome probability</font></H3></center>
 <br>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v0.min.js"></script>
 <center><svg></svg></center>
+  </div>
+</div>
 
 
 
@@ -306,8 +311,8 @@
       .range([barLeft - barWidth, barRight]);
 
 // MAP
-  var mapLeft = barLeft
-      mapRight = barRight
+  var mapLeft = barLeft - spacing/2
+      mapRight = barRight + spacing/4
       mapTop = barBottom + rankSpacing
       mapBottom = height
       cxMap = mapLeft + (mapRight - mapLeft)/2
@@ -943,10 +948,10 @@
     //==========================================================================================================//
 
 
-      var projection = d3.geo.mercator()  //d3.geo.equirectangular()
-          .center([20, 50])
-          .scale(90)
-          .rotate([0,0])
+      var projection = d3.geo.equirectangular() //d3.geo.mercator()  //
+          .center([0, 20])
+          .scale(120)
+          .rotate([-10,0])
           .translate([cxMap, cyMap])
           .clipExtent([[mapLeft, mapTop], [mapRight, mapBottom]]);
 
@@ -979,7 +984,7 @@
               "cx": function(d) { return projection([d.geo.lng, d.geo.lat])[0]},
               "cy": function(d) { return projection([d.geo.lng, d.geo.lat])[1]},
               "fill": "red",
-              "opacity": .5,
+              "opacity": .4,
               "r": 0
         })
         .on("mouseover", function(d){
