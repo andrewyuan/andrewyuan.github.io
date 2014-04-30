@@ -460,6 +460,24 @@
 		min-width: 1200px;
 	}
 
+	#wrapper-FWC
+	{
+		overflow: auto;
+		padding: 5em 0em;
+		background: #8DCB89 url(images/header.jpg) no-repeat center;
+		background-size: cover;
+		min-width: 1800px;
+	}
+
+	#wrapper-FWC .footer
+	{
+		letter-spacing: 0.20em;
+		text-align: center;
+		text-transform: uppercase;
+		font-size: 0.80em;
+		color: rgba(255,255,255,0.3);
+	}
+
 /*********************************************************************************/
 /* About Me                                                                       */
 /*********************************************************************************/
