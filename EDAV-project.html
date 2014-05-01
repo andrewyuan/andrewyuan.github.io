@@ -75,7 +75,8 @@
 <div id="wrapper-FWC">
   <div class="title">
 
-    <center><H3><font color="white" size="6px">2014 Fifa World Cup Brazil outcome probability</font></H3></center>
+    <center><H3><font color="white" size="6px">2014 Fifa World Cup Brazil predictions - And the Winner is...</font></H3>
+    <font color="gray">powered by <font color="white">D3.js</font></font></center>
   </div>
   <br>
   <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -1060,7 +1061,22 @@
       gRings.selectAll("path").attr("fill", color.gray)
       gTeamsNames.selectAll("text").attr("fill", color.text);
       gBarTeams.selectAll("text").attr("fill", color.text);
-      gBarTeams.selectAll("rect").attr("fill", color.gray)
+      gBarTeams.selectAll("rect")
+              .attr("fill", color.gray)
+/*              .transition()
+              .duration(750)
+              .attr({
+                "y": function(d) {
+                    for (var i in d.nodes) {
+                        if (d.nodes[i].node == "final"){
+                            d.probability = d.nodes[i].probability
+                        }
+                    }
+                    return yBarScale(d.probability)},
+                "height": function(d) {return yBarScale(0)-yBarScale(d.probability)}
+              })
+*/
+
       gRankTeams.selectAll("path").attr('stroke', 'gray')
       gRankTeams.selectAll("circle").attr('stroke', 'gray')
       gMapBubble.selectAll("circle").attr({
