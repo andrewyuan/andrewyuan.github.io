@@ -10,12 +10,6 @@
 <link href="style/default.css" rel="stylesheet" type="text/css" media="all" />
 <link href="style/fonts.css" rel="stylesheet" type="text/css" media="all" />
 <link href="style/magnific-popup.css" rel="stylesheet"> 
-<link rel="image_src" href="http://andrewyuan.github.io/img/datavis3.png"/>
-<meta name="twitter:image" content="http://andrewyuan.github.io/img/datavis3.png"/>
-<meta name="twitter:image:width" content="1920"/>
-<meta name="twitter:image:height" content="1080"/>
-<meta property="og:image" content="http://andrewyuan.github.io/img/datavis3.png" />
-
 <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 <script src="lib/jquery.magnific-popup.min.js?v=0.9.9"></script>
 <!--[if IE 6]><link href="default_ie6.css" rel="stylesheet" type="text/css" /><![endif]-->
@@ -243,7 +237,7 @@
               "circleNeutral": "white",
               "axis": "#eee",
               "text": "#fff",
-              "line": "#888",
+              "line": "#eee",
               "gray": "#666",
               "groupGray": {"A": "#333", "B": "#666", "C": "#555", "D": "#888", "E": "#777", "F": "#AAA", "G": "#999", "H": "#CCC"}, //grayscale
               "group": {"A": "#2A3A85", "B": "#FCD412", "C": "#61AA25", "D": "#DB2624", "E": "#0193D9", "F": "#F09D0C", "G": "#09621D", "H": "#86001A"}}; // Fifa Colors
@@ -332,7 +326,7 @@
 
   var rBubbleScale = d3.scale.linear()
       .domain([0, 1])
-      .range([5, 50]);
+      .range([2, 40]);
 
 
 // FRAME
@@ -350,9 +344,20 @@
           "height": height + margin.top + margin.bottom,
           "stroke": color.line,
           "stroke-width": .5,
-          "fill": "#222",
+          "fill": "#111",
           "opacity": 1
       })
+
+
+  svg.append("image")
+    .attr({
+        "xlink:href": "img/world-cup-trophy.jpg",
+        "preserveAspectRatio": "none",
+        "width": width + 3*margin.left + margin.right,
+        "height": height + margin.top + margin.bottom,
+        "x": -2*margin.left,
+        "y": -margin.top
+      });
 
   svg.append("line")
       .attr({
@@ -373,6 +378,7 @@
           "stroke": color.line,
           "stroke-width": .5
       })
+
 
 //==========================================================================================================//
 //============================================= CIRCULAR ===================================================
@@ -424,7 +430,7 @@
           .attr({
             "d": arcBox,
             "fill": function(d) {return color.group[d.data.group]; },
-            "opacity": .08,
+            "opacity": .15,
             "stroke": "black",
             "stroke-width": "1px",
             "stroke-opacity": 10});
@@ -492,8 +498,6 @@
             "x": function(d) { return cxCircle; },
             "y": function(d) { 
                               rotation = nodePosition[d.node].rotation;
-                              console.log(rotation)
-                              console.log(d)
                               if (-270 < rotation && rotation < -90) return cyCircle + rLevel * 4 + rLevel/4
                               else return cyCircle - rLevel * 4 - rLevel/16},
             //"x": 10,
@@ -812,14 +816,14 @@
           .call(yAxis)
           .attr("transform", "translate(" + xBarScale(0)+ ",0)");
 
-      gBar.selectAll(".vLines").data([0, .1, .2, .3, .4])
+      gBar.selectAll(".vLines").data([0, .05, .1, .15, .20])
           .enter().append("line")
           .attr({
               "x1": xBarScale(0),
               "x2": xBarScale(32),
               "y1": function(d) { return yBarScale(d)},
               "y2": function(d) { return yBarScale(d)},
-              "stroke": "black",
+              "stroke": color.line,
               "stroke-width": .4
           })
 
@@ -827,12 +831,12 @@
           .text("Champion Probability")
           .attr({
               "x": xBarScale(4),
-              "y": yBarScale(.2),
+              "y": yBarScale(.1),
               "font-size": "60px",
               "font-weight": "bold",
               "font-style": "normal",
               "fill": "gray",
-              "opacity": .2
+              "opacity": .4
           })
 
       gBarTeams.append("rect")
@@ -906,7 +910,7 @@
               "font-weight": "bold",
               "font-style": "normal",
               "fill": "gray",
-              "opacity": .2
+              "opacity": .4
           })
 
       rankPath = function(d) {
@@ -1042,7 +1046,6 @@
                               d.probability = d.nodes[i].probability
                           }
                       }
-                      console.log(rBubbleScale(Math.sqrt(d.probability)))
                       return rBubbleScale(Math.sqrt(d.probability))},
         })
 /*

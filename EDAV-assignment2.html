@@ -3176,7 +3176,7 @@ var gamesData = [
                   "gridline": "#888"};
       var lineColor = "#59DDAF";
 
-      var graphTitle = "Proportion of Wins x Ts Distance in Fifa Ranking",
+      var graphTitle = "Proportion of Wins x Teams Distance in Fifa Ranking",
           xAxisTitle = "Distance to opponent position in Fifa Ranking",
           yAxisTitle1 = "Share of goals scored per match",
           yAxisTitle2 = "Share of matches won per rank distance";
@@ -3435,7 +3435,7 @@ var gamesData = [
 
         .transition()
         .delay(function(d, i) { return ((d.rankDiff-minRankDiff)*10);})
-        .duration(1000)
+        .duration(500)
         .attr("cx", function(d) { return xScale(d.rankDiff); })
         .attr("cy", function(d) { return yScale(d.avrg); });
 
@@ -3503,8 +3503,8 @@ var gamesData = [
           currentView = "aggregated";
           svg.selectAll("circle")
              .transition()
-              .delay(function(d, i) { return ((d.rankDiff-minRankDiff)*20);})
-             .duration(1000)
+              .delay(function(d, i) { return ((d.rankDiff-minRankDiff)*10);})
+             .duration(500)
              .attr("cy", function(d) { return yScale(d.avrg); })
             .style("stroke", color.circleNeutral)
             .style("fill", color.circleNeutral)
@@ -3523,8 +3523,8 @@ var gamesData = [
           currentView = "perLocation";
           svg.selectAll("circle")
             .transition()
-            .delay(function(d, i) { return ((d.rankDiff-minRankDiff)*20);})
-            .duration(1000)
+            .delay(function(d, i) { return ((d.rankDiff-minRankDiff)*10);})
+            .duration(500)
             .attr("cy", function(d) { return yScale(d.classAvrg); })
             .style("stroke", function(d, i) {return d.color})
             .style("fill", function(d, i) {return d.color});
@@ -3544,8 +3544,8 @@ var gamesData = [
           svg.selectAll("circle")
 //             .data(dataset)
             .transition()
-            .delay(function(d, i) { return ((d.rankDiff-minRankDiff)*20);})
-            .duration(1000)
+            .delay(function(d, i) { return ((d.rankDiff-minRankDiff)*10);})
+            .duration(500)
             .attr("cy", function(d) { return yScale(d.goalsAvrg); })
             .style("stroke", function(d, i) {return d.color})
             .style("fill", function(d, i) {return d.color});
