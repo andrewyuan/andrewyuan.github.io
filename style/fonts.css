@@ -14,6 +14,16 @@
 
 @font-face
 {
+	font-family:"dusha_plusregular";
+	src:url("fonts/dusha-regular.eot");
+	src:local("☺"),url("fonts/dusha-regular.eot#iefix") format("embedded-opentype"),
+					url("fonts/dusha-regular.woff") format("woff"),
+					url("fonts/dusha-regular.ttf") format("truetype"),
+					url("fonts/dusha-regular.svg#svgFontName") format("svg")
+}
+
+@font-face
+{
 	font-family: 'Font-Awesome-Social';
 	src: url('fonts/fontawesome-social-webfont.eot');
 	src: url('fonts/fontawesome-social-webfont.eot?#iefix') format('embedded-opentype'),
