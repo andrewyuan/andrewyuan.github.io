@@ -1,20 +1,34 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <title>FWC prediction methodology</title>
-    
-    <meta name="description" content="Methodology utilized to develop the 2014 Fifa World Cup prediction - http://andrewyuan.github.io/EDAV-project.html" />
-    <meta name="author" content="Andrew Yuan" />
-
-    <link href="../style/methodology.css" rel="stylesheet" />
-
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900" rel="stylesheet" />
+<link href="../../style/default.css" rel="stylesheet" type="text/css" media="all" />
+<link href="../../style/fonts.css" rel="stylesheet" type="text/css" media="all" />
+<link href="../../style/magnific-popup.css" rel="stylesheet"> 
+<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+<script src="../../lib/jquery.magnific-popup.min.js?v=0.9.9"></script>
+<!--[if IE 6]><link href="default_ie6.css" rel="stylesheet" type="text/css" /><![endif]-->
 
 <style type="text/css">
+	    /* padding-bottom and top for image */
+	    .mfp-no-margins img.mfp-img {
+	      padding: 0;
+	    }
+	    /* position of shadow behind the image */
+	    .mfp-no-margins .mfp-figure:after {
+	      top: 0;
+	      bottom: 0;
+	    }
+	    /* padding for main container */
+	    .mfp-no-margins .mfp-container {
+	      padding: 0;
+	    }
+
       #tooltip {
         position: absolute;
         width: 300px;
@@ -52,7 +66,18 @@
         height: 1px;
         color: rgba(0,0,0,0.6);
       }
-
+      
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #ddd;
+        shape-rendering: crispEdges;
+      }
+      
+      .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
 
       a.button{
         margin:5px 5px 5px 5px;
@@ -111,99 +136,82 @@
 </style>
 
 </head>
-
-<body class="impress-not-supported">
-
-<div class="fallback-message">
-    <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
-    <p>For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.</p>
+<body>
+<div id="header-wrapper">
+	<div id="header" class="container">
+		<div id="menu">
+			<ul>
+				<li><a href="../../index.html" accesskey="1" id="homepage">Homepage</a></li>
+				<li><a href="../../index.html#aboutme" accesskey="2" id="aboutmeBtn">About Me</a></li>
+				<li class="current_page_item"><a href="../../index.html#samplework" accesskey="3" id="sampleworkBtn">Sample Work</a></li>
+				<li><a href="../../index.html#getintouch" accesskey="4" title="getintouchBtn">Get in Touch</a></li>
+			</ul>
+		</div>
 </div>
 
+<div id="wrapper3">
+	<div id="portfolio" class="container">
+			
+			
+<script src="http://d3js.org/d3.v3.min.js"></script>
 
-<div id="impress">
+<H3>Modeling the Probability of a Soccer Match Outcome</H3>
+
+<p>Analyzing the outcomes of 13.337 Fifa official matches since 1994 involving the 2014 Fifa World Cup contenders, a very clear trend can be observed from the matches data.
+<p>Based on scraped data from Fifa.com, a strong correlation could be observed between the games locations (home or away), the teams positions in the Fifa Ranking (more precisely, the distance between their positions) and the proportion of matches won or lost.
+<p>For instance, of the 48 matches played at home where a team challenged an opponent 10 positions below in the ranking table:
+
+<li> 27 (56.25%) were won by the home team
+<li> 12 (25%) ended up with a draw
+<li> 9 (18.75%) were lost.
+<li> Considering half of the draws as positive results and half as negative, it sums up to <b>68.75% of positive results</b>.
+<p>Now, for the exact same ranking distance, of the 44 matches played at the opponents home where the opponent was 10 positions below in the ranking table: 
+<li> 9 (20.45%) were won by the home team
+<li> 22 (50%) ended up with a draw
+<li> 13 (29.55%) were lost.
+<li> Considering half of the draws as positive results and half as negative, it sums up to <b>45.45% of positive results</b>.
+<p> Just to show a final example, of the 5 matches played at the opponents home where the opponent was 100 positions below in the ranking table, 100% of them were won by the away team. The matches for this case were:
+<li> (1)Brazil 3 x 0 Wales(101) - 05/23/2000 – Cardiff
+<li> (7)Spain 2 x 0 Latvia(107) - 06/02/2007 - Riga
+<li> (21)USA 1 x 0 Barbados(121) - 06/22/2008 - Bridgetown
+<li> (66)Cameroon 1 x 0 Guinea-Bissau(166) - 02/29/2012 - Bissau
+<li> (35)Algeria 1 x 0 Rwanda(135) - 06/16/2013 - Kigali
 
 
-    <div id="init" class="step" data-x="0" data-y="-1100" data-scale="8" data-rotate-x="90">
-        <center>
-            <img src="img\met\overview.png">
-            <br><font size="4px">(Use spacebar or arrow keys to navigate) </font>
-        </center>
+    <div class="buttonContainer" align="center">
+      <a class="button" target="_blank" rel="nofollow" id="aggregated" style="opacity:1"><span class="a-btn-text">Averaged</span></a>   
+      <a class="button" target="_blank" rel="nofollow" id="perLocation" style="opacity:0.4"><span class="a-btn-text">Avrg. Home/Away</span></a>    
+      <a class="button" target="_blank" rel="nofollow" id="perGame" style="opacity:0.4"><span class="a-btn-text">Detail Matches</span></a>
     </div>
-
-    <div id="init2" class="step" data-x="0" data-y="-800" data-scale="8" data-rotate-x="0">
-        <center><img src="img\met\overview.png"></center>
-    </div>
-
-    <div id="methodology1" class="step" data-x="-2300" data-y="1000" data-scale="4">
-        <center><img src="img\met\met1.png"></center>
-    </div>
-
-    <div id="methodology2" class="step" data-x="0" data-y="5500" data-scale="4" data-rotate="-90" data-rotate-y="40">
-        <center><img src="img\met\met2-frame.png"></center>
-    </div>
-
-    <div id="methodology2-1" class="step" data-x="0" data-y="6700" data-z="900" data-scale="1.5" data-rotate="-90" data-rotate-y="40">
-            <center><img src="img\met\met2-1.png"></center>
-    </div>
-
-    <div id="methodology2-2" class="step" data-x="0" data-y="5100" data-z="900" data-scale="1.1" data-rotate="-90" data-rotate-y="40">
-            <!--<center><img src="img\met\met2-2.png"></center>-->
-            <div class="buttonContainer" align="center">
-                  <a class="button" target="_blank" rel="nofollow" id="aggregated" style="opacity:1"><span class="a-btn-text">Averaged</span></a>   
-                  <a class="button" target="_blank" rel="nofollow" id="perLocation" style="opacity:0.4"><span class="a-btn-text">Avrg. Home/Away</span></a>    
-                  <a class="button" target="_blank" rel="nofollow" id="perGame" style="opacity:0.4"><span class="a-btn-text">Detail Matches</span></a>
-            </div>
-            <svg></svg>
-            <div id="tooltip" class="hidden" align="center">
-                <p class="title"><b><span id="matchScore"></span></p></b>
-                <p align="left"><b>Date: </b><span id="matchDate"></span>
-                <br><b>Location: </b><span id="matchLocation"></span>
-                <br><b>Tournament: </b><span id="matchTournament"></span></p>
-            </div>
-    </div>
-
-    <div id="methodology2-3" class="step" data-x="100" data-y="3800" data-z="900" data-scale="1.5" data-rotate="-90" data-rotate-y="40">
-            <center><img src="img\met\met2-3.png"></center>
-    </div>
-
-    <div id="methodology2-4" class="step" data-x="850" data-y="6800" data-scale="2" data-rotate="-90" data-rotate-y="40">
-            <center><img src="img\met\met2-4.png"></center>
-    </div>
-
-    <div id="methodology2-5" class="step" data-x="750" data-y="4900" data-scale="2" data-rotate="-90" data-rotate-y="40">
-            <center><img src="img\met\met2-5.png"></center>
-    </div>
-
-    <div id="methodology2-6" class="step" data-x="750" data-y="3600" data-scale="2" data-rotate="-90" data-rotate-y="40">
-            <center><img src="img\met\met2-6.png"></center>
-    </div>
-
-    <div id="methodology2" class="step" data-x="0" data-y="5500" data-scale="4" data-rotate="-90" data-rotate-y="40">
-        <center><img src="img\met\met2-frame.png"></center>
-    </div>
-
-    <div id="methodology3" class="step" data-x="2800" data-y="1000" data-scale="4">
-        <center><a href="EDAV-project.html"><img src="img\met\met3.png"></a></center>
-    </div>
-
+<svg></svg>
+<div id="tooltip" class="hidden" align="center">
+    <p class="title"><b><span id="matchScore"></span></p></b>
+    <p align="left"><b>Date: </b><span id="matchDate"></span>
+    <br><b>Location: </b><span id="matchLocation"></span>
+    <br><b>Tournament: </b><span id="matchTournament"></span></p>
 </div>
 
+<p><br>
+<p>
 
-<div class="hint">
-    <p>Use a spacebar or arrow keys to navigate</p>
-</div>
-<script>
-if ("ontouchstart" in document.documentElement) { 
-    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
-}
-</script>
+<h3>The Process</h3>
 
-<script src="../lib/impress.js"></script>
-<script>impress().init();</script>
+<li><b>Data Extraction:</b> <br>The data presented in the graph was scraped from www.fifa.com through two python scripts. That scripts automatically browsed hundreds of pages with matches’ results and ranking positions and expoted the data to csv and json files. It extracted data from every competition officially supported by Fifa, such as world cups, qualifying matches, friendly matches, beach soccer and futsal. More precisely, the scripts scraped 41.444 Fifa official matches scores since 1930 from 408 pages of data and 46.842 Fifa ranking positions for 215 different countries since 1993 from Fifa.com. For this work, we are only going considering world cups, qualifiers, confederations cups and friendly matches data. </li> 
+<p>
+<li><b>Data Munging:</b> <br>The data scraped from fifa.com only contained the cities where the matches took place, without reference to the country or any other additional geographical information. To discover if the matches took place at the home of one of the contenders, the data was complemented with geographical location data from the Google Maps API. Geographical data from 1400 cities were requested to the Google API through a Python script and exported to CSV and JSON files.
+<p>
+<li><b>Data Exploration/Graph Design:</b> <br>Since the volume of data isn't large (13.337 matches), the data was imported to an Microsoft Excel spreadsheet, where the data was munged and analyzed through pivot tables and formulas such as vlookups and countifs, used to calculate Ts ranking distance, proportion of wins/losses/draws and complement game location with country name. Then, MS Excel scatter plots were created to identify the features with better correlation to the proportion of wins. Then, the graphs designs were also developed in MS Excel until I found an exciting version to code.
+<p>
+<li><b>Data export:</b> <br>The data required to draw the graph was then exported to a JSON format through excel text formatting formulas.
+<p>
+<li><b>Graph coding:</b> <br>The graph was coded using javascript, D3.js and Sublime Text 3.
+<p>
+<br>
+<h3>The Fifa Ranking</h3>
 
-</body>
+<P>The ranking table is updated on a monthly basis, based on points earned from official matches results. The points earned depend on the opposing team ranking position, the importance of the match (whether it is a friendly match, a qualifying, confederations cup or world cup match) and the confederation of the opposing team. More information can be found <a href="http://www.fifa.com/worldranking/procedureandschedule/menprocedure/index.html">here</a>.
 
-<script src="https://d3js.org/d3.v3.min.js"></script>
+
 <script>
 
 
@@ -3139,12 +3147,11 @@ var gamesData = [
 //= Setup                                                                                                  =//
 //==========================================================================================================//
 
-      var margin = {top: 0, right: 0, bottom: 0, left: 0},
-          width = 1024 - margin.left,
-          height = 720 - margin.top,
+      var margin = {top: 15, right: 10, bottom: 5, left: 10},
+          width = 1200 - margin.left,
+          height = 800 - margin.top,
           padding = 80;
-      var posAdjustTop = 0;
-      var posAdjustLeft = -300;
+      var posAdjust = -300;
       var minRankDiff = 0, maxRankDiff = 0;
       var n = gamesData.length;
 
@@ -3169,7 +3176,7 @@ var gamesData = [
                   "gridline": "#888"};
       var lineColor = "#59DDAF";
 
-      var graphTitle = "Proportion of Wins x Distance in Fifa Ranking",
+      var graphTitle = "Proportion of Wins x Teams Distance in Fifa Ranking",
           xAxisTitle = "Distance to opponent position in Fifa Ranking",
           yAxisTitle1 = "Share of goals scored per match",
           yAxisTitle2 = "Share of matches won per rank distance";
@@ -3283,8 +3290,7 @@ var gamesData = [
       var xAxis = d3.svg.axis()
                 .scale(xScale)
                 .orient("bottom")
-                .ticks(20)
-                .tickSize(1);
+                .ticks(20);
 
       var formatPercent = d3.format(".0%");
       //Define Y axis
@@ -3292,13 +3298,11 @@ var gamesData = [
                 .scale(yScale)
                 .orient("left")
                 .ticks(10)
-                .tickSize(1)
                 .tickFormat(formatPercent);
   
       //Create X axis
       svg.append("g")
         .attr("class", "x axis")
-        .attr("font-size", "10px")
         .attr("transform", "translate(0," + (height - padding + 5) + ")")
         .call(xAxis)
         .style("fill", color.axis)
@@ -3307,7 +3311,6 @@ var gamesData = [
       //Create Y axis
       svg.append("g")
         .attr("class", "y axis")
-        .attr("font-size", "10px")
         .attr("transform", "translate(" + (padding - 5) + ",0)")
         .call(yAxis)
         .style("fill", color.axis);
@@ -3408,8 +3411,8 @@ var gamesData = [
 
               tooltip = d3.select("#tooltip")
 //                 .style("left", (d3.event.pageX+10) + "px")
-                 .style("left", (d3.event.pageX+posAdjustLeft) + "px")
-                 .style("top", (d3.event.pageY+posAdjustTop) + "px")
+                 .style("left", (d3.event.pageX+posAdjust) + "px")
+                 .style("top", (d3.event.pageY+posAdjust) + "px")
               tooltip.select("#matchScore").text(matchScore);  
               tooltip.select("#matchDate").text(d.date);  
               tooltip.select("#matchLocation").text(d.loc);
@@ -3450,7 +3453,7 @@ var gamesData = [
         "x": xScale(100),
         "y": height-padding/2,
         "height": 30,
-        "width": 230,
+        "width": 250,
         "rx": 6,
         "ry": 6,
         "fill": "none",
@@ -3558,14 +3561,35 @@ var gamesData = [
 
 
 </script>
-            
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7QVQ84RBGQ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+			
+		</div>
+	</div>
+</div>
 
-  gtag('config', 'G-7QVQ84RBGQ');
+<div id="contact">
+	<div class="title">
+		<h2><A NAME="getintouch">Get in touch</A></h2>
+		<span class="byline">I will be glad to hear from you!</span> </div>
+	<ul class="contact">
+		<li><a href="https://www.facebook.com/andrew.yuan.9" class="icon icon-facebook"><span></span></a></li>
+		<li><a href="https://www.linkedin.com/in/andrewgky" class="icon icon-linkedin"><span>LinkedIn</span></a></li>
+		<li><a href="https://plus.google.com/u/0/+AndrewYuanGK" class="icon icon-google-plus"><span>Google+</span></a></li>
+		<li><a href="https://twitter.com/AndrewGKYuan" class="icon icon-twitter"><span>Twitter</span></a></li>
+		<li><a href="https://github.com/andrewyuan" class="icon icon-github"><span>Github</span></a></li>
+		<li><a href="mailto:andrew.gk.yuan@gmail.com" class="icon icon-envelope"><span>Gmail</span></a></li>
+	</ul>
+	<p>Copyright (c) 2014 Andrew Yuan | Photos by <a href="#">Me</a> | Design by <a href="http://www.freecsstemplates.org/" rel="nofollow">CSS Templates</a>.</p>
+</div>
+</body>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-50045474-1', 'andrewyuan.github.io');
+  ga('send', 'pageview');
+
 </script>
+
 </html>
