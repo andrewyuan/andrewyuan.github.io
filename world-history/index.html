@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rivers of Civilization — World History Streamgraph</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="dark">
+    <!-- Header -->
+    <header class="sg-header">
+        <div class="sg-header-left">
+            <h1 class="sg-title">
+                <span class="sg-title-icon">〰</span>
+                Rivers of Civilization
+            </h1>
+            <p class="sg-subtitle">A streamgraph of world history · 3500 BCE – 2025 CE</p>
+        </div>
+        <div class="sg-header-right">
+            <button class="sg-btn" id="toggleLegend" title="Toggle legend">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </button>
+            <button class="sg-btn" id="themeToggle" title="Toggle theme">
+                <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+            <div class="sg-zoom-group">
+                <button class="sg-btn" id="zoomOut" title="Zoom out">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <span class="sg-zoom-label" id="zoomLevel">100%</span>
+                <button class="sg-btn" id="zoomIn" title="Zoom in">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Era Background Images -->
+    <div class="sg-era-bg" id="eraBg">
+        <div class="sg-era-bg-layer" data-era="early-bronze" style="background-image:url('images/Early%20Bronze%20Age.jpg')"></div>
+        <div class="sg-era-bg-layer" data-era="bronze" style="background-image:url('images/Bronze%20Age.jpg')"></div>
+        <div class="sg-era-bg-layer" data-era="iron" style="background-image:url('images/Iron%20Age.jpg')"></div>
+        <div class="sg-era-bg-layer" data-era="classical" style="background-image:url('images/Classical%20Antiquity.jpg')"></div>
+        <div class="sg-era-bg-layer" data-era="middle" style="background-image:url('images/Middle%20Ages.jpg')"></div>
+        <div class="sg-era-bg-layer" data-era="modern" style="background-image:url('images/Modern%20Period.jpg')"></div>
+    </div>
+
+    <!-- Legend Panel -->
+    <aside class="sg-legend" id="legendPanel">
+        <h3 class="sg-legend-title">Civilizations</h3>
+        <div class="sg-legend-content" id="legendContent"></div>
+    </aside>
+
+    <!-- World Map Panel -->
+    <div class="sg-map-panel" id="mapPanel">
+        <div class="sg-map-header">
+            <span class="sg-map-icon">🌍</span>
+            <span class="sg-map-year" id="mapYear">3500 BCE</span>
+            <button class="sg-btn sg-map-expand" id="mapExpand" title="Expand map">
+                <span id="mapExpandIcon">⤢</span>
+            </button>
+            <button class="sg-btn sg-map-toggle" id="mapToggle" title="Hide map">
+                <svg viewBox="0 0 24 24" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+        <div class="sg-map-body">
+            <canvas id="mapCanvas"></canvas>
+        </div>
+        <div class="sg-map-civs" id="mapCivList"></div>
+    </div>
+    <button class="sg-btn sg-map-show" id="mapShow" title="Show map">🌍</button>
+
+    <!-- Main Streamgraph Area -->
+    <main class="sg-main" id="sgMain">
+        <div class="sg-scroll" id="scrollContainer">
+            <canvas id="bgCanvas"></canvas>
+            <canvas id="fgCanvas"></canvas>
+        </div>
+    </main>
+
+    <!-- Era Bar (fixed at bottom) -->
+    <div class="sg-era-bar" id="eraBar"></div>
+
+    <!-- Tooltip -->
+    <div class="sg-tooltip" id="tooltip"></div>
+
+    <!-- Detail Panel Overlay -->
+    <div class="sg-detail-overlay" id="detailOverlay">
+        <div class="sg-detail" id="detailPanel">
+            <button class="sg-detail-close" id="detailClose">&times;</button>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
