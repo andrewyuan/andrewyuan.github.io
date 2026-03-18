@@ -200,48 +200,4 @@
     counterObserver.observe(el);
   });
 
-  // === LIGHTBOX ================================================
-  var lightbox   = document.getElementById('lightbox');
-  var lightboxImg = document.getElementById('lightbox-img');
-  var lightboxClose = document.getElementById('lightbox-close');
-
-  function openLightbox(src, alt) {
-    lightboxImg.src = src;
-    lightboxImg.alt = alt || '';
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    lightboxClose.focus();
-  }
-
-  function closeLightbox() {
-    lightbox.classList.remove('open');
-    lightboxImg.src = '';
-    document.body.style.overflow = '';
-  }
-
-  document.querySelectorAll('[data-lightbox]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      openLightbox(btn.getAttribute('data-lightbox'), btn.getAttribute('data-lightbox-alt'));
-    });
-  });
-
-  if (lightboxClose) {
-    lightboxClose.addEventListener('click', function (e) {
-      e.stopPropagation();
-      closeLightbox();
-    });
-  }
-
-  if (lightbox) {
-    lightbox.addEventListener('click', closeLightbox);
-    // Prevent click on image itself from closing
-    lightboxImg.addEventListener('click', function (e) { e.stopPropagation(); });
-  }
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && lightbox && lightbox.classList.contains('open')) {
-      closeLightbox();
-    }
-  });
-
 })();
