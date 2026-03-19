@@ -13,6 +13,7 @@
     'Building AI systems that reason, not just retrieve.',
     'Turning data into decisions across Asia Pacific.',
     'Patent holder. MIT-credentialed. Economist-featured.',
+    'Engineer → Architect → Analyst → Scientist → AI.',
     'Leading 30 data scientists across 12 markets.',
   ];
 
