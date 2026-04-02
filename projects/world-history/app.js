@@ -55,6 +55,9 @@
         mapVisible: true,
         mapExpanded: false,
         mapYear: CONFIG.START_YEAR,
+        // Draggable year indicator (screen-fixed)
+        indicatorRatio: 0.5,           // screen X position as fraction (0–1), default center
+        isDraggingIndicator: false,    // true while user drags the indicator
     };
 
     // ========== DOM ==========
@@ -503,6 +506,9 @@
                 fgCtx.shadowBlur = 0;
             }
         }
+
+        // Always draw the year indicator on top
+        drawYearIndicator();
     }
 
     // ========== HIT DETECTION ==========
@@ -528,6 +534,7 @@
     // ========== INTERACTION ==========
     function handleMouseMove(e) {
         if (state.isDragging) return;
+        if (state.isDraggingIndicator) return;
 
         const rect = fgCanvas.getBoundingClientRect();
         const cx = e.clientX - rect.left;
@@ -537,10 +544,22 @@
         if (layer !== state.hoveredLayer) {
             state.hoveredLayer = layer;
             renderHover();
+        } else {
+            // Redraw foreground to clear ghost trails, then redraw cursor + indicator
+            clearCanvas(fgCtx, fgCanvas);
+            if (state.hoveredLayer) renderHover();
+            drawCursorLine(cx);
+            drawYearIndicator();
         }
 
-        // Cursor time line on foreground
-        drawCursorLine(cx);
+        // Update cursor style near indicator
+        if (isNearIndicator(cx)) {
+            fgCanvas.style.cursor = 'ew-resize';
+        } else if (layer) {
+            fgCanvas.style.cursor = 'pointer';
+        } else {
+            fgCanvas.style.cursor = state.isDragging ? 'grabbing' : 'grab';
+        }
 
         // Tooltip
         if (layer) {
@@ -559,17 +578,15 @@
             const tr = tooltip.getBoundingClientRect();
             if (tr.right > window.innerWidth - 10) tooltip.style.left = (e.clientX - tr.width - 16) + 'px';
             if (tr.bottom > window.innerHeight - 10) tooltip.style.top = (e.clientY - tr.height - 10) + 'px';
-            fgCanvas.style.cursor = 'pointer';
         } else {
             tooltip.style.display = 'none';
-            fgCanvas.style.cursor = state.isDragging ? 'grabbing' : 'grab';
         }
     }
 
     function drawCursorLine(cx) {
         const isDark = state.theme === 'dark';
-        // Vertical time indicator
-        fgCtx.strokeStyle = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)';
+        // Faint cursor line (no ghost trails — fgCanvas is cleared before this)
+        fgCtx.strokeStyle = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
         fgCtx.lineWidth = 1;
         fgCtx.setLineDash([5, 5]);
         fgCtx.beginPath();
@@ -577,21 +594,82 @@
         fgCtx.lineTo(cx, canvasH);
         fgCtx.stroke();
         fgCtx.setLineDash([]);
+    }
 
-        // Year label
-        const j = Math.round(cx / stepPx);
-        if (j >= 0 && j < timePoints.length) {
-            fgCtx.font = '600 10px Inter, sans-serif';
-            fgCtx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)';
-            fgCtx.textAlign = 'center';
-            fgCtx.fillText(formatYear(timePoints[j]), cx, 14);
-        }
+    // ========== YEAR INDICATOR LINE (screen-fixed) ==========
+    function getIndicatorCanvasX() {
+        // The indicator is at a fixed screen position; convert to canvas-local x
+        return scrollContainer.scrollLeft + state.indicatorRatio * scrollContainer.clientWidth;
+    }
+
+    function getIndicatorYear() {
+        var pxPerYear = CONFIG.PX_PER_YEAR * state.zoom;
+        var cx = getIndicatorCanvasX();
+        var y = Math.round(cx / pxPerYear + CONFIG.START_YEAR);
+        return Math.max(CONFIG.START_YEAR, Math.min(CONFIG.END_YEAR, y));
+    }
+
+    function drawYearIndicator() {
+        var ix = getIndicatorCanvasX();
+        var year = getIndicatorYear();
+        var isDark = state.theme === 'dark';
+        var accentColor = '#f59e0b'; // amber accent
+
+        // Main vertical line
+        fgCtx.strokeStyle = accentColor;
+        fgCtx.lineWidth = 2;
+        fgCtx.setLineDash([]);
+        fgCtx.beginPath();
+        fgCtx.moveTo(ix, 0);
+        fgCtx.lineTo(ix, canvasH);
+        fgCtx.stroke();
+
+        // Glow effect
+        fgCtx.strokeStyle = isDark ? 'rgba(245,158,11,0.25)' : 'rgba(245,158,11,0.15)';
+        fgCtx.lineWidth = 6;
+        fgCtx.beginPath();
+        fgCtx.moveTo(ix, 0);
+        fgCtx.lineTo(ix, canvasH);
+        fgCtx.stroke();
+        fgCtx.lineWidth = 1;
+
+        // Drag handle (diamond at top)
+        fgCtx.fillStyle = accentColor;
+        fgCtx.beginPath();
+        fgCtx.moveTo(ix, 2);
+        fgCtx.lineTo(ix + 6, 10);
+        fgCtx.lineTo(ix, 18);
+        fgCtx.lineTo(ix - 6, 10);
+        fgCtx.closePath();
+        fgCtx.fill();
+
+        // Year label pill below handle
+        var label = formatYear(year);
+        fgCtx.font = '700 11px Inter, sans-serif';
+        var tw = fgCtx.measureText(label).width + 12;
+        var lx = ix - tw / 2, ly = 20;
+        fgCtx.fillStyle = accentColor;
+        fgCtx.beginPath();
+        fgCtx.roundRect(lx, ly, tw, 18, 4);
+        fgCtx.fill();
+        fgCtx.fillStyle = '#000';
+        fgCtx.textBaseline = 'middle';
+        fgCtx.fillText(label, ix, ly + 9);
+    }
+
+    function isNearIndicator(cx) {
+        var ix = getIndicatorCanvasX();
+        return Math.abs(cx - ix) < 12;
     }
 
     function handleMouseLeave() {
         if (state.hoveredLayer) {
             state.hoveredLayer = null;
             renderHover();
+        } else {
+            // Ensure indicator stays visible even after mouse leaves
+            clearCanvas(fgCtx, fgCanvas);
+            drawYearIndicator();
         }
         tooltip.style.display = 'none';
     }
@@ -642,14 +720,36 @@
     }
 
     function handleClick(e) {
-        if (!state.hoveredLayer) return;
-        const civ = state.hoveredLayer.civ;
-        showCivDetail(civ);
+        // Always move the year indicator to the clicked position
+        var scRect = scrollContainer.getBoundingClientRect();
+        var viewportX = e.clientX - scRect.left;
+        state.indicatorRatio = Math.max(0.02, Math.min(0.98, viewportX / scrollContainer.clientWidth));
+        updateMapFromIndicator();
+        clearCanvas(fgCtx, fgCanvas);
+        renderHover();
+
+        // If clicking on a stream, also open its detail panel
+        if (state.hoveredLayer) {
+            showCivDetail(state.hoveredLayer.civ);
+        }
     }
 
-    // ========== DRAG TO PAN ==========
+    // ========== DRAG TO PAN / INDICATOR DRAG ==========
     function handleDragStart(e) {
         if (e.button !== 0) return;
+        // Convert to canvas-local X for hit-testing
+        var scRect = scrollContainer.getBoundingClientRect();
+        var viewportX = e.clientX - scRect.left;
+        var cx = scrollContainer.scrollLeft + viewportX;
+
+        // Check if clicking near the year indicator — start indicator drag
+        if (isNearIndicator(cx)) {
+            e.preventDefault();
+            state.isDraggingIndicator = true;
+            fgCanvas.style.cursor = 'ew-resize';
+            return;
+        }
+
         state.isDragging = true;
         state.dragStartX = e.clientX;
         state.scrollStartX = scrollContainer.scrollLeft;
@@ -657,12 +757,29 @@
     }
 
     function handleDragMove(e) {
+        if (state.isDraggingIndicator) {
+            var scRect = scrollContainer.getBoundingClientRect();
+            var viewportX = e.clientX - scRect.left;
+            var newRatio = Math.max(0.02, Math.min(0.98, viewportX / scrollContainer.clientWidth));
+            if (newRatio !== state.indicatorRatio) {
+                state.indicatorRatio = newRatio;
+                updateMapFromIndicator();
+                clearCanvas(fgCtx, fgCanvas);
+                renderHover();
+            }
+            return;
+        }
         if (!state.isDragging) return;
         const dx = e.clientX - state.dragStartX;
         scrollContainer.scrollLeft = state.scrollStartX - dx;
     }
 
     function handleDragEnd() {
+        if (state.isDraggingIndicator) {
+            state.isDraggingIndicator = false;
+            fgCanvas.style.cursor = 'grab';
+            return;
+        }
         state.isDragging = false;
         fgCanvas.style.cursor = 'grab';
     }
@@ -1062,7 +1179,7 @@
                 var features = civFeatureMap[civ.id];
                 if (!features || features.length === 0) return;
 
-                // Fade-in/out alpha
+                // Fade-in/out alpha based on indicator year position within civ lifespan
                 var dur = civ.end - civ.start;
                 var ramp = Math.min(dur * 0.15, 80);
                 var alpha = 1.0;
@@ -1242,15 +1359,25 @@
     }
 
     function updateMapFromScroll() {
+        var pxPerYear = CONFIG.PX_PER_YEAR * state.zoom;
         var centerX = scrollContainer.scrollLeft + scrollContainer.clientWidth / 2;
-        var year = Math.round(centerX / (CONFIG.PX_PER_YEAR * state.zoom) + CONFIG.START_YEAR);
-        year = Math.max(CONFIG.START_YEAR, Math.min(CONFIG.END_YEAR, year));
+        var centerYear = Math.round(centerX / pxPerYear + CONFIG.START_YEAR);
+        centerYear = Math.max(CONFIG.START_YEAR, Math.min(CONFIG.END_YEAR, centerYear));
 
         // Update era background
-        updateEraBg(year);
+        updateEraBg(centerYear);
 
+        // Redraw indicator (its canvas X shifts as scroll changes, but screen position is fixed)
+        clearCanvas(fgCtx, fgCanvas);
+        drawYearIndicator();
+
+        // Update map to match the indicator's current year
+        updateMapFromIndicator();
+    }
+
+    function updateMapFromIndicator() {
+        var year = getIndicatorYear();
         if (!state.mapVisible) return;
-        // Only re-render if year changed significantly (every 5 years)
         var snapped = Math.round(year / 5) * 5;
         if (snapped !== state.mapYear) {
             state.mapYear = snapped;
