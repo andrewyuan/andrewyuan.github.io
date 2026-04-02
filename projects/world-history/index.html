@@ -20,6 +20,9 @@
             <p class="sg-subtitle">A streamgraph of world history · 3500 BCE – 2025 CE</p>
         </div>
         <div class="sg-header-right">
+            <button class="sg-btn active" id="swimlaneToggle" title="Switch to river view">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M2 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M2 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>
+            </button>
             <button class="sg-btn" id="toggleLegend" title="Toggle legend">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             </button>
@@ -31,7 +34,7 @@
                 <button class="sg-btn" id="zoomOut" title="Zoom out">
                     <svg viewBox="0 0 24 24" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
-                <span class="sg-zoom-label" id="zoomLevel">100%</span>
+                <span class="sg-zoom-label" id="zoomLevel" title="Shift + left-click drag on the chart to draw a zoom box">100%</span>
                 <button class="sg-btn" id="zoomIn" title="Zoom in">
                     <svg viewBox="0 0 24 24" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
@@ -80,6 +83,8 @@
             <canvas id="bgCanvas"></canvas>
             <canvas id="fgCanvas"></canvas>
         </div>
+        <canvas id="olCanvas"></canvas>
+    <div id="zoomBox"></div>
     </main>
 
     <!-- Era Bar (fixed at bottom) -->

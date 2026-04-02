@@ -30,7 +30,11 @@ const CIVILIZATIONS = [
     { id: 'teotihuacan', name: 'Teotihuacan', region: 'americas', start: -200, end: 550, color: '#d97706', subCol: 0.2, width: 1.8 },
     { id: 'aztec', name: 'Aztec Empire', region: 'americas', start: 1300, end: 1521, color: '#b45309', subCol: 0.2, width: 2.2 },
     { id: 'inca', name: 'Inca Empire', region: 'americas', start: 1400, end: 1533, color: '#92400e', subCol: 0.82, width: 1.8 },
-    { id: 'usa', name: 'United States', region: 'americas', start: 1776, end: 2025, color: '#1d4ed8', subCol: 0.35, width: 2.2 },
+    { id: 'new-spain', name: 'New Spain', region: 'americas', start: 1521, end: 1821, color: '#7c3aed', subCol: 0.3, width: 1.8 },
+    { id: 'brazil-col', name: 'Portuguese Brazil', region: 'americas', start: 1500, end: 1822, color: '#059669', subCol: 0.75, width: 1.5 },
+    { id: 'new-france', name: 'New France', region: 'americas', start: 1534, end: 1763, color: '#2563eb', subCol: 0.15, width: 1.5 },
+    { id: 'british-america', name: 'British America', region: 'americas', start: 1607, end: 1783, color: '#dc2626', subCol: 0.45, width: 1.5 },
+    { id: 'usa', name: 'United States', region: 'americas', start: 1776, end: 2025, color: '#1d4ed8', subCol: 0.35, width: 2.2, parent: 'british-america' },
 
     // ============ AFRICA ============
     { id: 'egypt-old', name: 'Egyptian Old Kingdom', region: 'africa', start: -2686, end: -2181, color: '#22d3ee', subCol: 0.6, width: 2.2 },
@@ -52,7 +56,10 @@ const CIVILIZATIONS = [
     { id: 'hre', name: 'Holy Roman Empire', region: 'europe', start: 962, end: 1806, color: '#581c87', subCol: 0.42, width: 1.8, parent: 'charlemagne' },
     { id: 'france', name: 'France', region: 'europe', start: 843, end: 2025, color: '#7c3aed', subCol: 0.15, width: 1.5, parent: 'charlemagne' },
     { id: 'british', name: 'British Empire', region: 'europe', start: 1583, end: 1997, color: '#dc2626', subCol: 0.55, width: 2.2 },
-    { id: 'soviet', name: 'Soviet Union', region: 'europe', start: 1922, end: 1991, color: '#b91c1c', subCol: 0.88, width: 1.5 },
+    { id: 'german-empire', name: 'German Empire', region: 'europe', start: 1871, end: 1918, color: '#374151', subCol: 0.42, width: 1.8, parent: 'hre' },
+    { id: 'nazi', name: 'Nazi Germany', region: 'europe', start: 1933, end: 1945, color: '#1f2937', subCol: 0.42, width: 2.0, parent: 'german-empire' },
+    { id: 'russian-empire', name: 'Russian Empire', region: 'europe', start: 1721, end: 1917, color: '#9f1239', subCol: 0.88, width: 1.8 },
+    { id: 'soviet', name: 'Soviet Union', region: 'europe', start: 1922, end: 1991, color: '#b91c1c', subCol: 0.88, width: 1.5, parent: 'russian-empire' },
 
     // ============ MIDDLE EAST ============
     { id: 'sumer', name: 'Sumer', region: 'middle-east', start: -3500, end: -2004, color: '#06b6d4', subCol: 0.3, width: 2.2 },

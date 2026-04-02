@@ -24,13 +24,15 @@
     // ========== POWER (influence weight) for each civilization ==========
     const POWER = {
         // Americas
-        'maya': 12, 'olmec': 8, 'teotihuacan': 10, 'aztec': 22, 'inca': 25, 'usa': 70,
+        'maya': 12, 'olmec': 8, 'teotihuacan': 10, 'aztec': 22, 'inca': 25,
+        'new-spain': 30, 'brazil-col': 18, 'new-france': 14, 'british-america': 20, 'usa': 82,
         // Africa
         'egypt-old': 28, 'egypt-middle': 24, 'egypt-new': 38, 'kush': 14, 'aksum': 11,
         'ghana': 14, 'mali': 24, 'songhai': 18,
         // Europe
         'minoan': 8, 'mycenaean': 10, 'greek': 24, 'roman': 68, 'byzantine': 30,
-        'charlemagne': 24, 'hre': 20, 'france': 24, 'british': 62, 'soviet': 58,
+        'charlemagne': 24, 'hre': 20, 'france': 24, 'british': 62,
+        'german-empire': 38, 'nazi': 45, 'russian-empire': 42, 'soviet': 58,
         // Middle East
         'sumer': 14, 'akkad': 10, 'babylon': 20, 'assyria': 24, 'achaemenid': 48,
         'parthia': 24, 'sassanid': 30, 'umayyad': 38, 'abbasid': 42, 'ottoman': 45,
@@ -38,8 +40,67 @@
         'indus': 20, 'maurya': 34, 'gupta': 30, 'chola': 14, 'mughal': 40,
         // East Asia
         'shang': 14, 'zhou': 20, 'qin': 22, 'han': 54, 'tang': 50, 'song': 34,
-        'mongol': 68, 'ming': 44, 'qing': 50, 'roc': 20, 'prc': 65, 'japan': 28,
-        'india': 45,
+        'mongol': 68, 'ming': 44, 'qing': 50, 'roc': 20, 'prc': 55, 'japan': 28,
+        'india': 38,
+    };
+
+    // ========== SWIMLANE REGIONS (multi-continent civilizations, time-ranged) ==========
+    // Each entry maps civ id → array of { region, start, end } for extra continents.
+    // The primary region (from CIVILIZATIONS) is always included and not listed here.
+    const CIV_SWIMLANE_REGIONS = {
+        'roman': [
+            { region: 'middle-east', start: -63, end: 476 },   // Pompey conquers Syria/Judea
+            { region: 'africa', start: -30, end: 476 },         // Annexation of Egypt
+        ],
+        'byzantine': [
+            { region: 'middle-east', start: 330, end: 636 },    // Until Arab conquests
+        ],
+        'greek': [
+            { region: 'middle-east', start: -334, end: -146 },  // Alexander & Hellenistic period
+        ],
+        'mongol': [
+            { region: 'middle-east', start: 1220, end: 1335 },  // Ilkhanate
+            { region: 'europe', start: 1237, end: 1368 },       // Golden Horde expansion
+        ],
+        'ottoman': [
+            { region: 'europe', start: 1354, end: 1913 },       // Gallipoli to Balkan Wars
+            { region: 'africa', start: 1517, end: 1882 },       // Egypt/N.Africa to British occupation
+        ],
+        'achaemenid': [
+            { region: 'south-asia', start: -518, end: -330 },   // Gandhara satrapy
+            { region: 'africa', start: -525, end: -330 },       // Conquest of Egypt
+        ],
+        'umayyad': [
+            { region: 'africa', start: 670, end: 750 },         // North Africa
+            { region: 'europe', start: 711, end: 750 },         // Iberia
+            { region: 'south-asia', start: 711, end: 750 },     // Sindh
+        ],
+        'abbasid': [
+            { region: 'africa', start: 750, end: 900 },         // N.Africa before breakaway
+        ],
+        'egypt-new': [
+            { region: 'middle-east', start: -1500, end: -1150 },// Levant campaigns
+        ],
+        'assyria': [
+            { region: 'africa', start: -671, end: -655 },       // Brief conquest of Egypt
+        ],
+        'british': [
+            { region: 'south-asia', start: 1757, end: 1947 },   // Plassey to Indian independence
+            { region: 'africa', start: 1806, end: 1968 },       // Cape Colony to decolonization
+            { region: 'east-asia', start: 1842, end: 1997 },    // Hong Kong
+        ],
+        'soviet': [
+            { region: 'east-asia', start: 1922, end: 1991 },    // Central Asian SSRs
+        ],
+        'german-empire': [
+            { region: 'africa', start: 1884, end: 1918 },       // German East/West/SW Africa
+        ],
+        'nazi': [
+            { region: 'africa', start: 1941, end: 1943 },       // North Africa campaign
+        ],
+        'russian-empire': [
+            { region: 'east-asia', start: 1721, end: 1917 },    // Siberia, Central Asia
+        ],
     };
 
     // ========== STATE ==========
@@ -58,10 +119,17 @@
         // Draggable year indicator (screen-fixed)
         indicatorRatio: 0.5,           // screen X position as fraction (0–1), default center
         isDraggingIndicator: false,    // true while user drags the indicator
+        swimlaneMode: true,
+        swimlaneT: 1,                  // 0=normal, 1=swimlane (animated)
+        // Zoom-box selection
+        isZoomBoxDrag: false,
+        zoomBoxStartX: 0,              // clientX at drag start
+        zoomBoxStartY: 0,              // clientY at drag start
     };
 
     // ========== DOM ==========
     let bgCanvas, fgCanvas, bgCtx, fgCtx;
+    let olCanvas, olCtx;   // fixed overlay for year indicator & lane labels
     let scrollContainer, tooltip, legendPanel, legendContent;
     let detailOverlay, detailContent;
     let mapCanvas, mapCtx, mapPanel, mapYearEl, mapCivList;
@@ -70,6 +138,7 @@
     let timePoints = [];
     let layers = [];
     let canvasW, canvasH, stepPx, centerY, vScale;
+    let swimlaneInfo = null;
 
     // ========== HELPERS ==========
     function smoothstep(t) {
@@ -112,7 +181,7 @@
         let env = 1.0;
         if (ramp > 0) {
             if (year < start + ramp) env = smoothstep((year - start) / ramp);
-            else if (year > end - ramp) env = smoothstep((end - year) / ramp);
+            else if (end < CONFIG.END_YEAR && year > end - ramp) env = smoothstep((end - year) / ramp);
         }
         return power * env;
     }
@@ -136,6 +205,8 @@
                 weights: weights,
                 y0: new Float64Array(timePoints.length),
                 y1: new Float64Array(timePoints.length),
+                sy0: new Float64Array(timePoints.length),
+                sy1: new Float64Array(timePoints.length),
             };
         });
     }
@@ -176,6 +247,91 @@
         vScale = maxExtent > 0 ? (availH / 2) / maxExtent : 1;
     }
 
+    // ========== SWIMLANE LAYOUT ==========
+    function computeSwimlaneLayout() {
+        var n = timePoints.length;
+        var regionOrder = ['americas', 'africa', 'europe', 'middle-east', 'south-asia', 'east-asia'];
+        var laneCount = regionOrder.length;
+        var topPad = 40, botPad = 40;
+        var laneGap = 6;
+        var availH = canvasH - topPad - botPad;
+        var totalGaps = laneGap * (laneCount - 1);
+        var laneH = (availH - totalGaps) / laneCount;
+
+        var lanes = {};
+        regionOrder.forEach(function(rid, i) {
+            var top = topPad + i * (laneH + laneGap);
+            lanes[rid] = { index: i, top: top, bottom: top + laneH, center: top + laneH / 2, height: laneH };
+        });
+        swimlaneInfo = { lanes: lanes, laneOrder: regionOrder, laneH: laneH, laneGap: laneGap };
+
+        // Stack all civs in their primary region's lane
+        var gap = CONFIG.STREAM_GAP;
+        regionOrder.forEach(function(rid) {
+            var lane = lanes[rid];
+            var laneLayers = layers.filter(function(l) { return l.civ.region === rid; });
+            if (laneLayers.length === 0) return;
+
+            for (var j = 0; j < n; j++) {
+                var total = 0;
+                for (var i = 0; i < laneLayers.length; i++) {
+                    total += laneLayers[i].weights[j];
+                    if (laneLayers[i].weights[j] > 0) total += gap;
+                }
+                var scale = vScale;
+                if (total > 0 && total * scale > lane.height * 0.85) {
+                    scale = (lane.height * 0.85) / total;
+                }
+                var y = lane.center - (total * scale) / 2;
+                for (var i = 0; i < laneLayers.length; i++) {
+                    laneLayers[i].sy0[j] = y;
+                    var w = laneLayers[i].weights[j] * scale;
+                    y += w;
+                    if (laneLayers[i].weights[j] > 0) y += gap * scale;
+                    laneLayers[i].sy1[j] = y - (laneLayers[i].weights[j] > 0 ? gap * scale : 0);
+                }
+            }
+        });
+
+        // Extend multi-region civs into adjacent lanes with thin tendrils.
+        // Extensions are time-dependent — only active during the years the
+        // civilization actually controlled territory on that continent.
+        var extensionPerLane = laneH * 0.18 + laneGap;
+
+        layers.forEach(function(l) {
+            var spans = CIV_SWIMLANE_REGIONS[l.civ.id];
+            if (!spans) return;
+
+            var primaryIdx = regionOrder.indexOf(l.civ.region);
+
+            for (var j = 0; j < n; j++) {
+                if (l.weights[j] <= 0) continue;
+                var year = timePoints[j];
+
+                // Determine which extra lanes are active at this year
+                var minIdx = primaryIdx, maxIdx = primaryIdx;
+                for (var s = 0; s < spans.length; s++) {
+                    if (year >= spans[s].start && year <= spans[s].end) {
+                        var idx = regionOrder.indexOf(spans[s].region);
+                        if (idx >= 0) {
+                            minIdx = Math.min(minIdx, idx);
+                            maxIdx = Math.max(maxIdx, idx);
+                        }
+                    }
+                }
+
+                var lanesAbove = primaryIdx - minIdx;
+                var lanesBelow = maxIdx - primaryIdx;
+                if (lanesAbove > 0) {
+                    l.sy0[j] = l.sy0[j] - extensionPerLane * lanesAbove;
+                }
+                if (lanesBelow > 0) {
+                    l.sy1[j] = l.sy1[j] + extensionPerLane * lanesBelow;
+                }
+            }
+        });
+    }
+
     // ========== CANVAS SETUP ==========
     function setupCanvases() {
         const dpr = window.devicePixelRatio || 1;
@@ -197,6 +353,15 @@
         fgCtx = fgCanvas.getContext('2d');
         bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
         fgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // Overlay canvas: viewport-sized, fixed (not scrollable)
+        var viewW = Math.floor(rect.width);
+        olCanvas.width = viewW * dpr;
+        olCanvas.height = canvasH * dpr;
+        olCanvas.style.width = viewW + 'px';
+        olCanvas.style.height = canvasH + 'px';
+        olCtx = olCanvas.getContext('2d');
+        olCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     // ========== SPLINE DRAWING ==========
@@ -219,13 +384,32 @@
         }
     }
 
+    // ========== SWIMLANE INTERPOLATION HELPERS ==========
+    function getTopY(layer, j) {
+        if (state.swimlaneT <= 0) return centerY - layer.y1[j] * vScale;
+        if (state.swimlaneT >= 1) return layer.sy0[j];
+        var normalY = centerY - layer.y1[j] * vScale;
+        return normalY + (layer.sy0[j] - normalY) * state.swimlaneT;
+    }
+
+    function getBotY(layer, j) {
+        if (state.swimlaneT <= 0) return centerY - layer.y0[j] * vScale;
+        if (state.swimlaneT >= 1) return layer.sy1[j];
+        var normalY = centerY - layer.y0[j] * vScale;
+        return normalY + (layer.sy1[j] - normalY) * state.swimlaneT;
+    }
+
+    function getStreamH(layer, j) {
+        return getBotY(layer, j) - getTopY(layer, j);
+    }
+
     // Build the closed path for a stream layer
     function traceStreamPath(ctx, layer) {
         const top = [], bot = [];
         for (let j = 0; j < timePoints.length; j++) {
             const x = j * stepPx;
-            top.push({ x, y: centerY - layer.y1[j] * vScale });
-            bot.push({ x, y: centerY - layer.y0[j] * vScale });
+            top.push({ x, y: getTopY(layer, j) });
+            bot.push({ x, y: getBotY(layer, j) });
         }
         ctx.beginPath();
         splineTo(ctx, top, CONFIG.TENSION, true);
@@ -327,8 +511,8 @@
             // Top-bottom gradient within the stream
             let minY = Infinity, maxY = -Infinity;
             for (let j = 0; j < timePoints.length; j++) {
-                const t = centerY - layer.y1[j] * vScale;
-                const b = centerY - layer.y0[j] * vScale;
+                const t = getTopY(layer, j);
+                const b = getBotY(layer, j);
                 if (t < minY) minY = t;
                 if (b > maxY) maxY = b;
             }
@@ -353,14 +537,14 @@
             // Find widest section
             let maxH = 0, maxJ = 0;
             for (let j = 0; j < timePoints.length; j++) {
-                const h = (layer.y1[j] - layer.y0[j]) * vScale;
+                const h = getStreamH(layer, j);
                 if (h > maxH) { maxH = h; maxJ = j; }
             }
             if (maxH < CONFIG.LABEL_MIN_HEIGHT) return;
 
             const x = maxJ * stepPx;
-            const topY = centerY - layer.y1[maxJ] * vScale;
-            const botY = centerY - layer.y0[maxJ] * vScale;
+            const topY = getTopY(layer, maxJ);
+            const botY = getBotY(layer, maxJ);
             const midY = (topY + botY) / 2;
             const fontSize = Math.min(12, Math.max(6, maxH * 0.32));
 
@@ -408,8 +592,8 @@
 
             let minTop = Infinity, maxBot = -Infinity;
             regionLayers.forEach(l => {
-                const t = centerY - l.y1[j] * vScale;
-                const b = centerY - l.y0[j] * vScale;
+                const t = getTopY(l, j);
+                const b = getBotY(l, j);
                 if (t < minTop) minTop = t;
                 if (b > maxBot) maxBot = b;
             });
@@ -425,11 +609,111 @@
         });
     }
 
+    // ========== SWIMLANE DRAWING ==========
+    function drawLaneDividers(ctx) {
+        if (state.swimlaneT < 0.01 || !swimlaneInfo) return;
+        var isDark = state.theme === 'dark';
+        var alpha = state.swimlaneT * 0.25;
+        ctx.strokeStyle = isDark ? 'rgba(255,255,255,' + alpha + ')' : 'rgba(0,0,0,' + alpha + ')';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 6]);
+        swimlaneInfo.laneOrder.forEach(function(rid, i) {
+            if (i === 0) return;
+            var lane = swimlaneInfo.lanes[rid];
+            var y = lane.top - swimlaneInfo.laneGap / 2;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvasW, y);
+            ctx.stroke();
+        });
+        ctx.setLineDash([]);
+    }
+
+    function drawLaneLabels() {
+        if (state.swimlaneT < 0.01 || !swimlaneInfo) return;
+        var alpha = state.swimlaneT;
+        var isDark = state.theme === 'dark';
+        var viewW = olCanvas.width / (window.devicePixelRatio || 1);
+        var labelW = 28;
+        var rightX = viewW - 5;
+
+        swimlaneInfo.laneOrder.forEach(function(rid) {
+            var lane = swimlaneInfo.lanes[rid];
+            var region = REGIONS.find(function(r) { return r.id === rid; });
+            if (!region) return;
+
+            var boxX = rightX - labelW;
+            var boxH = lane.height;
+            var boxY = lane.top;
+
+            // Background
+            olCtx.fillStyle = isDark
+                ? 'rgba(20,20,40,' + (0.75 * alpha) + ')'
+                : 'rgba(245,243,238,' + (0.8 * alpha) + ')';
+            olCtx.fillRect(boxX, boxY, labelW, boxH);
+
+            // Left accent border
+            olCtx.fillStyle = hexToRGBA(region.color, 0.6 * alpha);
+            olCtx.fillRect(boxX, boxY, 3, boxH);
+
+            // Vertical text
+            olCtx.save();
+            olCtx.translate(boxX + labelW / 2 + 2, lane.center);
+            olCtx.rotate(-Math.PI / 2);
+            olCtx.font = '700 9px Inter, sans-serif';
+            olCtx.textAlign = 'center';
+            olCtx.textBaseline = 'middle';
+            olCtx.fillStyle = hexToRGBA(region.color, alpha);
+            olCtx.fillText(region.name.toUpperCase(), 0, 0);
+            olCtx.restore();
+        });
+    }
+
+    function toggleSwimlane() {
+        state.swimlaneMode = !state.swimlaneMode;
+        document.getElementById('swimlaneToggle').classList.toggle('active', state.swimlaneMode);
+        var btn = document.getElementById('swimlaneToggle');
+        btn.title = state.swimlaneMode ? 'Switch to river view' : 'Switch to swimlane view';
+        animateSwimlaneTransition(state.swimlaneMode ? 1 : 0);
+    }
+
+    function animateSwimlaneTransition(targetT) {
+        var startT = state.swimlaneT;
+        var startTime = performance.now();
+        var duration = 900;
+
+        function tick(now) {
+            var elapsed = now - startTime;
+            var progress = Math.min(1, elapsed / duration);
+            var eased = progress < 0.5
+                ? 4 * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            state.swimlaneT = startT + (targetT - startT) * eased;
+            renderFull();
+            renderHover();
+            renderOverlay();
+            if (progress < 1) {
+                requestAnimationFrame(tick);
+            }
+        }
+
+        requestAnimationFrame(tick);
+    }
+
+    // ========== OVERLAY RENDER (fixed-position: year indicator + lane labels) ==========
+    function renderOverlay() {
+        if (!olCtx) return;
+        clearCanvas(olCtx, olCanvas);
+        drawYearIndicator();
+        drawLaneLabels();
+    }
+
     // ========== FULL RENDER ==========
     function renderFull() {
         clearCanvas(bgCtx, bgCanvas);
         drawBackground(bgCtx);
         drawEraBands(bgCtx);
+        drawLaneDividers(bgCtx);
         drawStreams(bgCtx);
         drawStreamLabels(bgCtx);
         drawEventMarkers(bgCtx);
@@ -455,8 +739,8 @@
             const col = hl.civ.color;
             let minY = Infinity, maxY = -Infinity;
             for (let j = 0; j < timePoints.length; j++) {
-                const t = centerY - hl.y1[j] * vScale;
-                const b = centerY - hl.y0[j] * vScale;
+                const t = getTopY(hl, j);
+                const b = getBotY(hl, j);
                 if (t < minY) minY = t;
                 if (b > maxY) maxY = b;
             }
@@ -487,13 +771,13 @@
             // Highlighted stream label
             let maxH = 0, maxJ = 0;
             for (let j = 0; j < timePoints.length; j++) {
-                const h = (hl.y1[j] - hl.y0[j]) * vScale;
+                const h = getStreamH(hl, j);
                 if (h > maxH) { maxH = h; maxJ = j; }
             }
             if (maxH > 8) {
                 const x = maxJ * stepPx;
-                const topY = centerY - hl.y1[maxJ] * vScale;
-                const botY = centerY - hl.y0[maxJ] * vScale;
+                const topY = getTopY(hl, maxJ);
+                const botY = getBotY(hl, maxJ);
                 const midY = (topY + botY) / 2;
                 const fontSize = Math.min(14, Math.max(8, maxH * 0.38));
                 fgCtx.font = '800 ' + fontSize + 'px Inter, sans-serif';
@@ -508,7 +792,7 @@
         }
 
         // Always draw the year indicator on top
-        drawYearIndicator();
+        renderOverlay();
     }
 
     // ========== HIT DETECTION ==========
@@ -524,8 +808,8 @@
         if (j < 0 || j >= timePoints.length) return null;
         for (let i = 0; i < layers.length; i++) {
             if (layers[i].weights[j] < 0.1) continue;
-            const top = centerY - layers[i].y1[j] * vScale;
-            const bot = centerY - layers[i].y0[j] * vScale;
+            const top = getTopY(layers[i], j);
+            const bot = getBotY(layers[i], j);
             if (cy >= top && cy <= bot) return layers[i];
         }
         return null;
@@ -549,7 +833,7 @@
             clearCanvas(fgCtx, fgCanvas);
             if (state.hoveredLayer) renderHover();
             drawCursorLine(cx);
-            drawYearIndicator();
+            renderOverlay();
         }
 
         // Update cursor style near indicator
@@ -610,51 +894,53 @@
     }
 
     function drawYearIndicator() {
-        var ix = getIndicatorCanvasX();
+        var screenX = state.indicatorRatio * (olCanvas.width / (window.devicePixelRatio || 1));
         var year = getIndicatorYear();
         var isDark = state.theme === 'dark';
         var accentColor = '#f59e0b'; // amber accent
+        var h = canvasH;
 
         // Main vertical line
-        fgCtx.strokeStyle = accentColor;
-        fgCtx.lineWidth = 2;
-        fgCtx.setLineDash([]);
-        fgCtx.beginPath();
-        fgCtx.moveTo(ix, 0);
-        fgCtx.lineTo(ix, canvasH);
-        fgCtx.stroke();
+        olCtx.strokeStyle = accentColor;
+        olCtx.lineWidth = 2;
+        olCtx.setLineDash([]);
+        olCtx.beginPath();
+        olCtx.moveTo(screenX, 0);
+        olCtx.lineTo(screenX, h);
+        olCtx.stroke();
 
         // Glow effect
-        fgCtx.strokeStyle = isDark ? 'rgba(245,158,11,0.25)' : 'rgba(245,158,11,0.15)';
-        fgCtx.lineWidth = 6;
-        fgCtx.beginPath();
-        fgCtx.moveTo(ix, 0);
-        fgCtx.lineTo(ix, canvasH);
-        fgCtx.stroke();
-        fgCtx.lineWidth = 1;
+        olCtx.strokeStyle = isDark ? 'rgba(245,158,11,0.25)' : 'rgba(245,158,11,0.15)';
+        olCtx.lineWidth = 6;
+        olCtx.beginPath();
+        olCtx.moveTo(screenX, 0);
+        olCtx.lineTo(screenX, h);
+        olCtx.stroke();
+        olCtx.lineWidth = 1;
 
         // Drag handle (diamond at top)
-        fgCtx.fillStyle = accentColor;
-        fgCtx.beginPath();
-        fgCtx.moveTo(ix, 2);
-        fgCtx.lineTo(ix + 6, 10);
-        fgCtx.lineTo(ix, 18);
-        fgCtx.lineTo(ix - 6, 10);
-        fgCtx.closePath();
-        fgCtx.fill();
+        olCtx.fillStyle = accentColor;
+        olCtx.beginPath();
+        olCtx.moveTo(screenX, 2);
+        olCtx.lineTo(screenX + 6, 10);
+        olCtx.lineTo(screenX, 18);
+        olCtx.lineTo(screenX - 6, 10);
+        olCtx.closePath();
+        olCtx.fill();
 
         // Year label pill below handle
         var label = formatYear(year);
-        fgCtx.font = '700 11px Inter, sans-serif';
-        var tw = fgCtx.measureText(label).width + 12;
-        var lx = ix - tw / 2, ly = 20;
-        fgCtx.fillStyle = accentColor;
-        fgCtx.beginPath();
-        fgCtx.roundRect(lx, ly, tw, 18, 4);
-        fgCtx.fill();
-        fgCtx.fillStyle = '#000';
-        fgCtx.textBaseline = 'middle';
-        fgCtx.fillText(label, ix, ly + 9);
+        olCtx.font = '700 11px Inter, sans-serif';
+        olCtx.textAlign = 'center';
+        var tw = olCtx.measureText(label).width + 12;
+        var lx = screenX - tw / 2, ly = 20;
+        olCtx.fillStyle = accentColor;
+        olCtx.beginPath();
+        olCtx.roundRect(lx, ly, tw, 18, 4);
+        olCtx.fill();
+        olCtx.fillStyle = '#000';
+        olCtx.textBaseline = 'middle';
+        olCtx.fillText(label, screenX, ly + 9);
     }
 
     function isNearIndicator(cx) {
@@ -669,7 +955,7 @@
         } else {
             // Ensure indicator stays visible even after mouse leaves
             clearCanvas(fgCtx, fgCanvas);
-            drawYearIndicator();
+            renderOverlay();
         }
         tooltip.style.display = 'none';
     }
@@ -727,6 +1013,7 @@
         updateMapFromIndicator();
         clearCanvas(fgCtx, fgCanvas);
         renderHover();
+        renderOverlay();
 
         // If clicking on a stream, also open its detail panel
         if (state.hoveredLayer) {
@@ -734,7 +1021,9 @@
         }
     }
 
-    // ========== DRAG TO PAN / INDICATOR DRAG ==========
+    // ========== DRAG TO PAN / INDICATOR DRAG / ZOOM BOX ==========
+    var zoomBoxEl = document.getElementById('zoomBox');
+
     function handleDragStart(e) {
         if (e.button !== 0) return;
         // Convert to canvas-local X for hit-testing
@@ -747,6 +1036,21 @@
             e.preventDefault();
             state.isDraggingIndicator = true;
             fgCanvas.style.cursor = 'ew-resize';
+            return;
+        }
+
+        // Shift+drag → zoom-box selection
+        if (e.shiftKey) {
+            e.preventDefault();
+            state.isZoomBoxDrag = true;
+            state.zoomBoxStartX = e.clientX;
+            state.zoomBoxStartY = e.clientY;
+            zoomBoxEl.style.display = 'block';
+            zoomBoxEl.style.left = e.clientX + 'px';
+            zoomBoxEl.style.top = e.clientY + 'px';
+            zoomBoxEl.style.width = '0px';
+            zoomBoxEl.style.height = '0px';
+            fgCanvas.style.cursor = 'crosshair';
             return;
         }
 
@@ -766,7 +1070,19 @@
                 updateMapFromIndicator();
                 clearCanvas(fgCtx, fgCanvas);
                 renderHover();
+                renderOverlay();
             }
+            return;
+        }
+        if (state.isZoomBoxDrag) {
+            var x0 = state.zoomBoxStartX;
+            var y0 = state.zoomBoxStartY;
+            var x1 = e.clientX;
+            var y1 = e.clientY;
+            zoomBoxEl.style.left = Math.min(x0, x1) + 'px';
+            zoomBoxEl.style.top = Math.min(y0, y1) + 'px';
+            zoomBoxEl.style.width = Math.abs(x1 - x0) + 'px';
+            zoomBoxEl.style.height = Math.abs(y1 - y0) + 'px';
             return;
         }
         if (!state.isDragging) return;
@@ -774,10 +1090,54 @@
         scrollContainer.scrollLeft = state.scrollStartX - dx;
     }
 
-    function handleDragEnd() {
+    function handleDragEnd(e) {
         if (state.isDraggingIndicator) {
             state.isDraggingIndicator = false;
             fgCanvas.style.cursor = 'grab';
+            return;
+        }
+        if (state.isZoomBoxDrag) {
+            state.isZoomBoxDrag = false;
+            zoomBoxEl.style.display = 'none';
+            fgCanvas.style.cursor = 'grab';
+
+            // Compute the horizontal zoom from the selection box
+            var x0 = state.zoomBoxStartX;
+            var x1 = e.clientX;
+            var boxW = Math.abs(x1 - x0);
+            if (boxW < 10) return; // ignore tiny drags
+
+            var scRect = scrollContainer.getBoundingClientRect();
+            var leftViewport = Math.min(x0, x1) - scRect.left;
+            var rightViewport = Math.max(x0, x1) - scRect.left;
+
+            // Convert viewport X to years
+            var pxPerYear = CONFIG.PX_PER_YEAR * state.zoom;
+            var leftYear = (scrollContainer.scrollLeft + leftViewport) / pxPerYear + CONFIG.START_YEAR;
+            var rightYear = (scrollContainer.scrollLeft + rightViewport) / pxPerYear + CONFIG.START_YEAR;
+            var spanYears = rightYear - leftYear;
+            if (spanYears < 10) return;
+
+            // Compute new zoom so that spanYears fills the viewport width
+            var viewportW = scrollContainer.clientWidth;
+            var newZoom = viewportW / (spanYears * CONFIG.PX_PER_YEAR);
+            newZoom = Math.max(CONFIG.MIN_ZOOM, Math.min(CONFIG.MAX_ZOOM, newZoom));
+
+            // Apply zoom and scroll to center of selection
+            state.zoom = newZoom;
+            setupCanvases();
+            computeLayout();
+            computeSwimlaneLayout();
+            renderFull();
+            renderHover();
+            renderOverlay();
+
+            var midYear = (leftYear + rightYear) / 2;
+            var newCenterX = (midYear - CONFIG.START_YEAR) * CONFIG.PX_PER_YEAR * state.zoom;
+            scrollContainer.scrollLeft = newCenterX - viewportW / 2;
+
+            document.getElementById('zoomLevel').textContent = Math.round(state.zoom * 100) + '%';
+            updateMapFromScroll();
             return;
         }
         state.isDragging = false;
@@ -835,8 +1195,10 @@
 
         setupCanvases();
         computeLayout();
+        computeSwimlaneLayout();
         renderFull();
         renderHover();
+        renderOverlay();
 
         const newCenterX = yearAtCenter * CONFIG.PX_PER_YEAR * state.zoom;
         scrollContainer.scrollLeft = newCenterX - scrollContainer.clientWidth / 2;
@@ -850,6 +1212,7 @@
         document.body.setAttribute('data-theme', state.theme);
         renderFull();
         renderHover();
+        renderOverlay();
         // Theme affects base map cache
         mapBaseCacheDark = null;
         mapBaseCacheLight = null;
@@ -889,6 +1252,10 @@
         'teotihuacan':  { lon: -99, lat: 20, rlon: 3, rlat: 3 },
         'aztec':        { lon: -99, lat: 19, rlon: 5, rlat: 5 },
         'inca':         { lon: -72, lat: -13, rlon: 5, rlat: 15 },
+        'new-spain':    { lon: -99, lat: 19, rlon: 10, rlat: 8 },
+        'brazil-col':   { lon: -50, lat: -15, rlon: 10, rlat: 12 },
+        'new-france':   { lon: -72, lat: 48, rlon: 10, rlat: 6 },
+        'british-america': { lon: -78, lat: 37, rlon: 8, rlat: 6 },
         'usa':          { lon: -95, lat: 38, rlon: 25, rlat: 10 },
         // Africa
         'egypt-old':    { lon: 31, lat: 27, rlon: 4, rlat: 5 },
@@ -909,6 +1276,9 @@
         'hre':          { lon: 11, lat: 50, rlon: 6, rlat: 6 },
         'france':       { lon: 2, lat: 47, rlon: 5, rlat: 4 },
         'british':      { lon: -2, lat: 54, rlon: 4, rlat: 4 },
+        'german-empire': { lon: 10, lat: 51, rlon: 6, rlat: 4 },
+        'nazi':         { lon: 12, lat: 52, rlon: 10, rlat: 8 },
+        'russian-empire': { lon: 50, lat: 58, rlon: 35, rlat: 12 },
         'soviet':       { lon: 55, lat: 57, rlon: 40, rlat: 12 },
         // Middle East
         'sumer':        { lon: 45, lat: 31, rlon: 3, rlat: 3 },
@@ -952,6 +1322,10 @@
         'teotihuacan':  [484],
         'aztec':        [484],
         'inca':         [604, 68, 218, 152, 32, 170],
+        'new-spain':    [484, 320, 340, 222, 188, 192, 214, 630, 862],
+        'brazil-col':   [76],
+        'new-france':   [124, 840],
+        'british-america': [840, 124],
         'usa':          [840],
         // Africa
         'egypt-old':    [818],
@@ -972,6 +1346,9 @@
         'hre':          [276, 40, 203, 703, 756, 528, 56, 442, 380, 705, 191],
         'france':       [250],
         'british':      [826, 372],
+        'german-empire': [276, 616, 203, 40, 756, 442],
+        'nazi':         [276, 40, 203, 616, 208, 528, 56, 250, 578, 348, 642, 191, 100, 300, 804, 112, 440, 428, 233, 380, 8],
+        'russian-empire': [643, 804, 112, 398, 268, 51, 31, 860, 795, 762, 417, 498, 428, 440, 233, 616],
         'soviet':       [643, 804, 112, 398, 268, 51, 31, 860, 795, 762, 417, 498, 428, 440, 233],
         // Middle East
         'sumer':        [368],
@@ -1369,7 +1746,7 @@
 
         // Redraw indicator (its canvas X shifts as scroll changes, but screen position is fixed)
         clearCanvas(fgCtx, fgCanvas);
-        drawYearIndicator();
+        renderOverlay();
 
         // Update map to match the indicator's current year
         updateMapFromIndicator();
@@ -1389,6 +1766,7 @@
     function init() {
         bgCanvas = document.getElementById('bgCanvas');
         fgCanvas = document.getElementById('fgCanvas');
+        olCanvas = document.getElementById('olCanvas');
         scrollContainer = document.getElementById('scrollContainer');
         tooltip = document.getElementById('tooltip');
         legendPanel = document.getElementById('legendPanel');
@@ -1406,6 +1784,7 @@
         // Setup
         setupCanvases();
         computeLayout();
+        computeSwimlaneLayout();
 
         // Setup map
         setupMapCanvas();
@@ -1422,6 +1801,7 @@
 
         // Render
         renderFull();
+        renderOverlay();
 
         // Scroll to Classical Antiquity
         const classicalX = (-600 - CONFIG.START_YEAR) * CONFIG.PX_PER_YEAR * state.zoom;
@@ -1454,6 +1834,7 @@
         document.getElementById('zoomIn').addEventListener('click', function () { setZoom(state.zoom + CONFIG.ZOOM_STEP); });
         document.getElementById('zoomOut').addEventListener('click', function () { setZoom(state.zoom - CONFIG.ZOOM_STEP); });
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        document.getElementById('swimlaneToggle').addEventListener('click', toggleSwimlane);
         document.getElementById('toggleLegend').addEventListener('click', function () {
             state.legendVisible = !state.legendVisible;
             legendPanel.classList.toggle('active', state.legendVisible);
@@ -1490,8 +1871,10 @@
         window.addEventListener('resize', debounce(function () {
             setupCanvases();
             computeLayout();
+            computeSwimlaneLayout();
             renderFull();
             renderHover();
+            renderOverlay();
             setupMapCanvas();
             updateMapFromScroll();
         }, 250));
